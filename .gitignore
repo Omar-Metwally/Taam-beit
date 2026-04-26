@@ -1,0 +1,33 @@
+# ── Secrets — never commit these ──────────────────────────────────────────────
+.env
+*.local.json
+secrets.json
+appsettings.*.local.json
+
+# ── .NET ───────────────────────────────────────────────────────────────────────
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+.idea/
+*.userprefs
+TestResults/
+**/Migrations/ApplicationDbContextModelSnapshot.cs
+
+# ── Node / Frontend ────────────────────────────────────────────────────────────
+**/node_modules/
+**/dist/
+**/build/
+.pnp.*
+*.tsbuildinfo
+.eslintcache
+
+# ── Docker ─────────────────────────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ── OS ─────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

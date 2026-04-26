@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--  Postgres + PostGIS  -->
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" />
+    <PackageReference Include="NetTopologySuite" />
+
+    <!--  H3 hexagonal indexing  -->
+    <PackageReference Include="H3" />
+
+    <!--  EF Core tools (design-time only)  -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+
+    <!--  Auth  -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+    <PackageReference Include="BCrypt.Net-Next" />
+
+    <!--  SignalR  -->
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" />
+
+    <!--  Background services  -->
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+
+    <!--  JSON serialization for outbox  -->
+    <PackageReference Include="Newtonsoft.Json" />
+
+    <!--  MinIO object storage  -->
+    <PackageReference Include="Minio" />
+
+    <!--  NetVips image processing (libvips .NET binding)  -->
+    <PackageReference Include="NetVips" />
+
+    <!--  Quartz for outbox polling  -->
+    <PackageReference Include="Quartz.Extensions.Hosting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
+  </ItemGroup>
+
+</Project>

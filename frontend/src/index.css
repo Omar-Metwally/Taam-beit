@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand:        #2D7A2D;
+  --brand-dark:   #256325;
+  --forest:       #1E5C1E;
+  --text-primary: #1A1A1A;
+  --text-muted:   #6B6B6B;
+  --bg:           #FAFAF7;
+  --border:       #E8E8E4;
+}
+
+@layer base {
+  html { @apply scroll-smooth; }
+  body {
+    @apply font-body text-[--text-primary] bg-[--bg] antialiased;
+  }
+  h1, h2, h3 { @apply font-display; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-brand-500 hover:bg-brand-600 active:bg-brand-700
+           text-white font-body font-semibold
+           px-6 py-3 rounded-full
+           transition-all duration-200
+           shadow-sm hover:shadow-md
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2
+           border-2 border-brand-500 text-brand-500
+           hover:bg-brand-500 hover:text-white
+           font-body font-semibold
+           px-6 py-3 rounded-full
+           transition-all duration-200
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-card hover:shadow-card-hover
+           transition-shadow duration-300;
+  }
+
+  .meal-card-img {
+    @apply w-full h-48 object-cover rounded-t-2xl;
+  }
+
+  .tag-pill {
+    @apply inline-flex items-center gap-1 text-xs font-semibold
+           bg-brand-50 text-brand-600 px-3 py-1 rounded-full;
+  }
+
+  /* Custom scrollbar for category strip */
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* Leaflet map z-index fix */
+.leaflet-container { z-index: 1; }
+
+/* Page fade-in animation */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.45s ease both; }
+.fade-up-delay-1 { animation-delay: 0.1s; }
+.fade-up-delay-2 { animation-delay: 0.2s; }
+.fade-up-delay-3 { animation-delay: 0.3s; }

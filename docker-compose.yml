@@ -1,0 +1,115 @@
+services:
+
+  # ── Postgres + PostGIS + H3 ────────────────────────────────────────────────
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: taambeit_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB:       taambeit
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/docker/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d taambeit"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - taambeit_network
+    restart: unless-stopped
+
+  # ── MinIO object storage ───────────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: taambeit_minio
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # MinIO Console UI → http://localhost:9001
+    environment:
+      MINIO_ROOT_USER:     ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taambeit_network
+    restart: unless-stopped
+
+  # ── .NET API ───────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taambeit_api
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS:        http://+:8080
+
+      # Database
+      ConnectionStrings__Database: >-
+        Host=db;Port=5432;Database=taambeit;
+        Username=postgres;Password=${POSTGRES_PASSWORD:-postgres}
+
+      # JWT — MUST be overridden in production via .env
+      Jwt__SecretKey:      ${JWT_SECRET_KEY:-CHANGE_ME_AT_LEAST_32_CHARS_LONG_PLEASE}
+      Jwt__Issuer:         TaAmBeit.Api
+      Jwt__Audience:       TaAmBeit.Client
+      Jwt__ExpiryMinutes:  60
+      Jwt__CookieName:     taambeit_auth
+
+      # CORS — frontend origin
+      Cors__AllowedOrigins: http://localhost:80,http://frontend
+
+      # MinIO
+      Minio__Endpoint:       minio:9000
+      Minio__AccessKey:      ${MINIO_ACCESS_KEY:-minioadmin}
+      Minio__SecretKey:      ${MINIO_SECRET_KEY:-minioadmin}
+      Minio__PublicBaseUrl:  http://localhost:9000
+      Minio__UseSSL:         "false"
+
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - taambeit_network
+    restart: unless-stopped
+
+  # ── React frontend (Nginx) ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # MinIO public URL — used by Vite at build time for image URLs
+        VITE_MINIO_PUBLIC_URL: http://localhost:9000
+    container_name: taambeit_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - taambeit_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
+
+networks:
+  taambeit_network:
+    driver: bridge
