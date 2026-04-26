@@ -5,51 +5,51 @@
 
   <ItemGroup>
     <!-- EF Core + Postgres + PostGIS -->
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL"                         Version="9.0.4" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite"         Version="9.0.4" />
-    <PackageVersion Include="NetTopologySuite"                                               Version="2.5.0" />
-    <PackageVersion Include="EFCore.NamingConventions"                                       Version="8.0.3" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design"                           Version="9.0.4" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL"                         Version="10.0.1" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite"         Version="10.0.1" />
+    <PackageVersion Include="NetTopologySuite"                                               Version="2.6.0" />
+    <PackageVersion Include="EFCore.NamingConventions"                                       Version="10.0.1" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design"                           Version="10.0.7" />
 
     <!-- H3 hexagonal indexing -->
     <PackageVersion Include="H3"                                                             Version="4.1.0" />
 
     <!-- Auth -->
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer"                  Version="9.0.4" />
-    <PackageVersion Include="System.IdentityModel.Tokens.Jwt"                               Version="8.3.3" />
-    <PackageVersion Include="BCrypt.Net-Next"                                               Version="4.0.3" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer"                  Version="10.0.7" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt"                               Version="8.17.0" />
+    <PackageVersion Include="BCrypt.Net-Next"                                               Version="4.1.0" />
 
     <!-- SignalR -->
-    <PackageVersion Include="Microsoft.AspNetCore.SignalR"                                   Version="1.2.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR"                                   Version="1.2.9" />
 
     <!-- Background services + Quartz -->
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions"                     Version="9.0.4" />
-    <PackageVersion Include="Quartz.Extensions.Hosting"                                     Version="3.13.1" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions"                     Version="10.0.7" />
+    <PackageVersion Include="Quartz.Extensions.Hosting"                                     Version="3.18.1" />
 
     <!-- Serialisation -->
-    <PackageVersion Include="Newtonsoft.Json"                                               Version="13.0.3" />
+    <PackageVersion Include="Newtonsoft.Json"                                               Version="13.0.4" />
 
     <!-- Validation -->
-    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions"                Version="11.11.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions"                Version=" 12.1.1" />
 
     <!-- Scrutor — assembly scanning for decorators -->
-    <PackageVersion Include="Scrutor"                                                        Version="5.1.0" />
+    <PackageVersion Include="Scrutor"                                                        Version="7.0.0" />
 
     <!-- Logging -->
-    <PackageVersion Include="Serilog"                                                        Version="4.2.0" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions"                     Version="9.0.4" />
+    <PackageVersion Include="Serilog"                                                        Version="4.3.1" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions"                     Version="10.0.7" />
 
     <!-- EF Core (shared across projects) -->
-    <PackageVersion Include="Microsoft.EntityFrameworkCore"                                  Version="9.0.4" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore"                                  Version="10.0.7" />
 
     <!-- NetVips image processing -->
-    <PackageVersion Include="NetVips"                                                         Version="2.3.0" />
+    <PackageVersion Include="NetVips"                                                         Version="3.2.0" />
 
     <!-- MinIO object storage -->
     <PackageVersion Include="Minio"                                                          Version="6.0.3" />
 
     <!-- API -->
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi"                                   Version="9.0.4" />
-    <PackageVersion Include="Scalar.AspNetCore"                                              Version="2.3.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi"                                   Version="10.0.7" />
+    <PackageVersion Include="Scalar.AspNetCore"                                              Version="2.14.4" />
   </ItemGroup>
 </Project>

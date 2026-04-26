@@ -3,7 +3,7 @@
 > **Flavors from Home, Delivered to Your Door.**
 > A full-stack food delivery platform connecting customers with local home chefs.
 
-![Stack](https://img.shields.io/badge/.NET-9.0-512BD4?style=flat-square&logo=dotnet)
+![Stack](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)
 ![Stack](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
 ![Stack](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
 ![Stack](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql)
@@ -28,7 +28,7 @@ Ta'am Beit is a multi-role food delivery platform with three distinct user roles
 
 ```
 taambeit/
- ├── backend/      .NET 9 — Clean Architecture
+ ├── backend/      .NET 10 — Clean Architecture
  │    ├── src/
  │    │    ├── SharedKernel/    Entity base, Result<T>, Error pattern
  │    │    ├── Domain/          Aggregates, value objects, domain events
@@ -289,7 +289,7 @@ src/features/
 
 ### Backend
 - **.NET 9** — ASP.NET Core Web API
-- **Entity Framework Core 9** with **Npgsql + PostGIS** (NetTopologySuite)
+- **Entity Framework Core 10** with **Npgsql + PostGIS** (NetTopologySuite)
 - **PostgreSQL 16** — primary database
 - **H3.net** — hexagonal geospatial indexing for delivery fan-out
 - **SignalR** — real-time order status and GPS tracking
