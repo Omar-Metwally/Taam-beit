@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!--  Postgres + PostGIS  -->
+		<PackageReference Include="EFCore.NamingConventions" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+		<PackageReference Include="NetTopologySuite" />
+
+		<!--  H3 hexagonal indexing  -->
+		<PackageReference Include="pocketken.H3" />
+
+		<!--  EF Core tools (design-time only)  -->
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+
+		<!--  Auth  -->
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+		<PackageReference Include="BCrypt.Net-Next" />
+
+		<!--  SignalR  -->
+		<PackageReference Include="Microsoft.AspNetCore.SignalR" />
+
+		<!--  Background services  -->
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+
+		<!--  JSON serialization for outbox  -->
+		<PackageReference Include="Newtonsoft.Json" />
+
+		<!--  Garage / S3-compatible object storage  -->
+		<PackageReference Include="AWSSDK.S3" />
+
+		<!--  NetVips image processing (libvips .NET binding)  -->
+		<PackageReference Include="NetVips" />
+
+		<!-- Windows x64 -->
+		<PackageReference Include="NetVips.Native.win-x64" />
+
+		<!-- OR Linux x64 (for Docker/Linux) -->
+		<PackageReference Include="NetVips.Native.linux-x64" />
+
+		<!--  Quartz for outbox polling  -->
+		<PackageReference Include="Quartz.Extensions.Hosting" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Application\Application.csproj" />
+	</ItemGroup>
+
+	<Target Name="CopyVipsNative" AfterTargets="Build">
+		<ItemGroup>
+			<VipsDlls Include="$(NuGetPackageRoot)netvips.native.win-x64\8.18.2\runtimes\win-x64\native\*.dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(VipsDlls)"
+			  DestinationFolder="$(OutputPath)"
+			  SkipUnchangedFiles="true" />
+	</Target>
+
+</Project>

@@ -1,0 +1,32 @@
+# Development override — use with:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Differences from production:
+#   - API runs in Development mode with auto-migration
+#   - Frontend runs Vite dev server (HMR) instead of Nginx
+#   - Source code is volume-mounted for hot reload
+
+services:
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: build          # stop at build stage, don't publish
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    volumes:
+      - ./backend:/src       # mount source for dotnet watch
+    command: ["dotnet", "watch", "--project", "src/Api/Api.csproj", "run"]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src        # mount src for HMR
+      - ./frontend/public:/app/public
+    environment:
+      - CHOKIDAR_USEPOLLING=true       # needed inside Docker on some OSes

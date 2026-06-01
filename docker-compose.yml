@@ -1,0 +1,133 @@
+services:
+  # ── Postgres + PostGIS + ────────────────────────────────────────────────
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: taambeit_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: taambeit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/docker/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d taambeit"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - taambeit_network
+    restart: unless-stopped
+
+  # ── Garage object storage (S3-compatible) ─────────────────────────────────
+  garage:
+    image: dxflrs/garage:v1.0.1
+    container_name: taambeit_garage
+    ports:
+      - "3900:3900" # S3 API       — authenticated uploads/deletes
+      - "3901:3901" # Admin API    — bootstrap only
+      - "3903:3903" # Web endpoint — public file serving
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET:-0000000000000000000000000000000000000000000000000000000000000000}
+    volumes:
+      - garage_meta:/var/lib/garage/meta
+      - garage_data:/var/lib/garage/data
+      - ./backend/docker/garage/garage.toml:/etc/garage.toml
+    healthcheck:
+      test: ["CMD", "/garage", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    networks:
+      - taambeit_network
+    restart: unless-stopped
+
+  # ── Garage bootstrap (runs once on first deploy, then exits) ──────────────
+  garage-bootstrap:
+    image: curlimages/curl:latest
+    container_name: taambeit_garage_bootstrap
+    depends_on:
+      - garage
+    environment:
+      GARAGE_ADMIN_URL: http://garage:3901
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN:?GARAGE_ADMIN_TOKEN must be set in .env}
+    volumes:
+      - ./backend/docker/garage/bootstrap-garage.sh:/bootstrap-garage.sh:ro
+    entrypoint: ["sh", "/bootstrap-garage.sh"]
+    networks:
+      - taambeit_network
+    restart: "no"
+
+  # ── .NET API ───────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taambeit_api
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+
+      # Database
+      ConnectionStrings__Database: >-
+        Host=db;Port=5432;Database=taambeit;
+        Username=postgres;Password=${POSTGRES_PASSWORD:-postgres}
+
+      # JWT
+      Jwt__SecretKey: ${JWT_SECRET_KEY:-CHANGE_ME_AT_LEAST_32_CHARS_LONG_PLEASE}
+      Jwt__Issuer: TaAmBeit.Api
+      Jwt__Audience: TaAmBeit.Client
+      Jwt__ExpiryMinutes: 60
+      Jwt__CookieName: taambeit_auth
+
+      # CORS
+      Cors__AllowedOrigins: http://localhost,http://localhost:80
+
+      # Garage — Endpoint is S3 API (auth required), PublicBaseUrl is web endpoint (public)
+      Garage__Endpoint: http://garage:3900
+      Garage__AccessKey: ${GARAGE_ACCESS_KEY:?GARAGE_ACCESS_KEY must be set in .env}
+      Garage__SecretKey: ${GARAGE_SECRET_KEY:?GARAGE_SECRET_KEY must be set in .env}
+      Garage__PublicBaseUrl: http://localhost:3903
+      Garage__UseSSL: "false"
+
+    depends_on:
+      db:
+        condition: service_healthy
+      garage:
+        condition: service_healthy
+    networks:
+      - taambeit_network
+    restart: unless-stopped
+
+  # ── React frontend (Nginx) ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_MINIO_PUBLIC_URL: http://localhost:3903
+    container_name: taambeit_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - taambeit_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  garage_meta:
+    driver: local
+  garage_data:
+    driver: local
+
+networks:
+  taambeit_network:
+    driver: bridge
